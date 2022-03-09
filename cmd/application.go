@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	container "demo/app"
 	"demo/infra/config"
 	"demo/infra/connection"
 	"fmt"
@@ -18,6 +19,7 @@ func Execute() {
 
 func runServer() {
 	e := echo.New()
+	container.Init(e)
 	port := config.App().Port
 	e.Logger.Fatal(e.Start(":" + port))
 }
