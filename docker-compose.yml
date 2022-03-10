@@ -1,0 +1,31 @@
+services:
+  api_server:
+    build: .
+    container_name: api_server
+    hostname: api_server
+    restart: unless-stopped
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - .env
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql
+    links:
+      - mysql
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    env_file:
+      - .env
+    hostname: mysql
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
