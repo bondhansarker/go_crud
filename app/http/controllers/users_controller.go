@@ -21,11 +21,11 @@ func NewUsersController(e *echo.Echo, userService service.IUsers) {
 		userService: userService,
 	}
 
-	e.POST("/users/", userController.Create)
-	e.GET("/users/", userController.Index)
-	e.GET("/users/:id/", userController.Show)
-	e.PUT("/users/:id/", userController.Update)
-	e.DELETE("/users/:id/", userController.Delete)
+	e.GET("/users", userController.Index)
+	e.POST("/users", userController.Create)
+	e.PUT("/users/:id", userController.Update)
+	e.DELETE("/users/:id", userController.Delete)
+	e.GET("/users/:id", userController.Show)
 }
 
 func (ctr *users) Index(c echo.Context) error {

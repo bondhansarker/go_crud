@@ -50,8 +50,6 @@ func loadEnvironmentVariables() {
 }
 
 func setDefaultConfig() {
-	fmt.Println(os.Getenv("MYSQL_HOST"), os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASS"), os.Getenv("MYSQL_SCHEMA"))
-
 	config.Db = &DbConfig{
 		Host:   os.Getenv("MYSQL_HOST"),
 		Port:   os.Getenv("MYSQL_PORT"),

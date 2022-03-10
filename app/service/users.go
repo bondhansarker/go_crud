@@ -11,9 +11,9 @@ import (
 type IUsers interface {
 	GetUsers() (*domain.Users, *errors.RestErr)
 	CreateUser(domain.User) (*domain.User, *errors.RestErr)
-	GetUserByID(userID int) (*domain.User, *errors.RestErr)
 	UpdateUser(userID int, req serializers.UserRequest) (*domain.User, *errors.RestErr)
 	DeleteUser(userID int) *errors.RestErr
+	GetUserByID(userID int) (*domain.User, *errors.RestErr)
 }
 
 type users struct {
@@ -42,14 +42,6 @@ func (u *users) CreateUser(user domain.User) (*domain.User, *errors.RestErr) {
 	return resp, nil
 }
 
-func (u *users) GetUserByID(userID int) (*domain.User, *errors.RestErr) {
-	resp, getErr := u.userRepo.Find(userID)
-	if getErr != nil {
-		return nil, getErr
-	}
-	return resp, nil
-}
-
 func (u *users) UpdateUser(userID int, req serializers.UserRequest) (*domain.User, *errors.RestErr) {
 	var user *domain.User
 	err := utils.StructToStruct(req, &user)
@@ -69,4 +61,12 @@ func (u *users) DeleteUser(userID int) *errors.RestErr {
 		return getErr
 	}
 	return nil
+}
+
+func (u *users) GetUserByID(userID int) (*domain.User, *errors.RestErr) {
+	resp, getErr := u.userRepo.Find(userID)
+	if getErr != nil {
+		return nil, getErr
+	}
+	return resp, nil
 }
