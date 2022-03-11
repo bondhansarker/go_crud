@@ -12,3 +12,5 @@ type UserRequest struct {
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`
 }
+
+type UsersResponse []*UserResponse

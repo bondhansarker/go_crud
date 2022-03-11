@@ -35,7 +35,13 @@ func (ctr *users) Index(c echo.Context) error {
 	if getErr != nil {
 		return c.JSON(getErr.Status, getErr)
 	}
-	return c.JSON(http.StatusOK, result)
+	var usersResp *serializers.UsersResponse
+	respErr := methods.StructToStruct(result, &usersResp)
+	if respErr != nil {
+		return respErr
+	}
+
+	return c.JSON(http.StatusOK, usersResp)
 }
 
 func (ctr *users) Create(c echo.Context) error {
@@ -53,7 +59,7 @@ func (ctr *users) Create(c echo.Context) error {
 		return c.JSON(saveErr.Status, saveErr)
 	}
 
-	var response serializers.UserResponse
+	var response *serializers.UserResponse
 	respErr := methods.StructToStruct(result, &response)
 
 	if respErr != nil {
@@ -81,7 +87,7 @@ func (ctr *users) Update(c echo.Context) error {
 		return c.JSON(updateErr.Status, updateErr)
 	}
 
-	var response serializers.UserResponse
+	var response *serializers.UserResponse
 	respErr := methods.StructToStruct(result, &response)
 
 	if respErr != nil {
@@ -102,7 +108,7 @@ func (ctr *users) Show(c echo.Context) error {
 		return c.JSON(getErr.Status, getErr)
 	}
 
-	var response serializers.UserResponse
+	var response *serializers.UserResponse
 	respErr := methods.StructToStruct(result, &response)
 
 	if respErr != nil {
