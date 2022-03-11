@@ -2,8 +2,10 @@ package config
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"os"
+	"time"
+
+	"github.com/joho/godotenv"
 )
 
 type DbConfig struct {
@@ -12,6 +14,14 @@ type DbConfig struct {
 	User   string
 	Pass   string
 	Schema string
+}
+
+type JwtConfig struct {
+	AccessTokenSecret  string
+	RefreshTokenSecret string
+	AccessTokenExpiry  time.Duration
+	RefreshTokenExpiry time.Duration
+	ContextKey         string
 }
 
 type AppConfig struct {
@@ -25,6 +35,7 @@ type AppConfig struct {
 type Config struct {
 	Db  *DbConfig
 	App *AppConfig
+	Jwt *JwtConfig
 }
 
 var config Config
@@ -35,6 +46,10 @@ func App() *AppConfig {
 
 func Db() *DbConfig {
 	return config.Db
+}
+
+func Jwt() *JwtConfig {
+	return config.Jwt
 }
 
 func LoadConfig() {
@@ -57,8 +72,17 @@ func setDefaultConfig() {
 		Pass:   os.Getenv("MYSQL_PASS"),
 		Schema: os.Getenv("MYSQL_SCHEMA"),
 	}
+
 	config.App = &AppConfig{
 		Name: os.Getenv("APP_NAME"),
 		Port: os.Getenv("APP_PORT"),
+	}
+
+	config.Jwt = &JwtConfig{
+		AccessTokenSecret:  "accesstokensecret",
+		RefreshTokenSecret: "refreshtokensecret",
+		AccessTokenExpiry:  300,
+		RefreshTokenExpiry: 10080,
+		ContextKey:         "user",
 	}
 }

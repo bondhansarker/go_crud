@@ -17,8 +17,10 @@ func Init(e *echo.Echo) {
 
 	//register all services
 	userService := service.NewUsersService(userRepository)
+	tokenService := service.NewTokenService(userRepository)
+	authService := service.NewAuthService(userRepository, tokenService)
 
 	//register all controllers
 	controllers.NewUsersController(e, userService)
-
+	controllers.NewAuthController(e, authService, userService)
 }

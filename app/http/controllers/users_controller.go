@@ -1,13 +1,15 @@
 package controllers
 
 import (
+	"net/http"
+	"strconv"
+
 	"demo/app/domain"
 	"demo/app/serializers"
 	"demo/app/service"
-	"demo/app/utils"
+	"demo/app/utils/methods"
 	"demo/infra/errors"
-	"net/http"
-	"strconv"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/labstack/echo/v4"
 )
@@ -22,7 +24,7 @@ func NewUsersController(e *echo.Echo, userService service.IUsers) {
 	}
 
 	e.GET("/users", userController.Index)
-	e.POST("/users", userController.Create)
+	e.POST("/users/signup", userController.Create)
 	e.PUT("/users/:id", userController.Update)
 	e.DELETE("/users/:id", userController.Delete)
 	e.GET("/users/:id", userController.Show)
@@ -42,6 +44,9 @@ func (ctr *users) Create(c echo.Context) error {
 		restErr := errors.NewBadRequestError("invalid json body")
 		return c.JSON(restErr.Status, restErr)
 	}
+	hashedPass, _ := bcrypt.GenerateFromPassword([]byte(*user.Password), 8)
+	*user.Password = string(hashedPass)
+
 	result, saveErr := ctr.userService.CreateUser(user)
 
 	if saveErr != nil {
@@ -49,7 +54,7 @@ func (ctr *users) Create(c echo.Context) error {
 	}
 
 	var response serializers.UserResponse
-	respErr := utils.StructToStruct(result, &response)
+	respErr := methods.StructToStruct(result, &response)
 
 	if respErr != nil {
 		return respErr
@@ -77,7 +82,7 @@ func (ctr *users) Update(c echo.Context) error {
 	}
 
 	var response serializers.UserResponse
-	respErr := utils.StructToStruct(result, &response)
+	respErr := methods.StructToStruct(result, &response)
 
 	if respErr != nil {
 		return respErr
@@ -98,7 +103,7 @@ func (ctr *users) Show(c echo.Context) error {
 	}
 
 	var response serializers.UserResponse
-	respErr := utils.StructToStruct(result, &response)
+	respErr := methods.StructToStruct(result, &response)
 
 	if respErr != nil {
 		return respErr

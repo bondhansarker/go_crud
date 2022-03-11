@@ -4,7 +4,7 @@ import (
 	"demo/app/domain"
 	"demo/app/repository"
 	"demo/app/serializers"
-	"demo/app/utils"
+	"demo/app/utils/methods"
 	"demo/infra/errors"
 )
 
@@ -44,7 +44,7 @@ func (u *users) CreateUser(user domain.User) (*domain.User, *errors.RestErr) {
 
 func (u *users) UpdateUser(userID int, req serializers.UserRequest) (*domain.User, *errors.RestErr) {
 	var user *domain.User
-	err := utils.StructToStruct(req, &user)
+	err := methods.StructToStruct(req, &user)
 	if err != nil {
 		return nil, errors.NewInternalServerError(errors.ErrSomethingWentWrong)
 	}

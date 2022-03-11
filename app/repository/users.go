@@ -12,6 +12,7 @@ type IUsers interface {
 	Update(userID int, user *domain.User) (*domain.User, *errors.RestErr)
 	Delete(userID int) *errors.RestErr
 	Find(userID int) (*domain.User, *errors.RestErr)
+	FindByEmail(email string) (*domain.User, error)
 }
 
 type users struct {
@@ -68,6 +69,18 @@ func (r *users) Find(userID int) (*domain.User, *errors.RestErr) {
 	}
 	if res.Error != nil {
 		return nil, errors.NewInternalServerError(errors.ErrSomethingWentWrong)
+	}
+	return user, nil
+}
+
+func (r *users) FindByEmail(email string) (*domain.User, error) {
+	user := &domain.User{}
+	res := r.DB.Model(&domain.User{}).Where("email = ?", email).Find(&user)
+	if res.RowsAffected == 0 {
+		return nil, errors.NewError(errors.ErrRecordNotFound)
+	}
+	if res.Error != nil {
+		return nil, errors.NewError(errors.ErrSomethingWentWrong)
 	}
 	return user, nil
 }
