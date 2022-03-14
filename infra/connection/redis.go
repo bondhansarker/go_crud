@@ -1,10 +1,11 @@
 package connection
 
 import (
+	"context"
 	"fmt"
 
 	"demo/infra/config"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 )
 
 var redisClient *redis.Client
@@ -18,7 +19,7 @@ func ConnectRedis() {
 		DB:       redisConfig.Db,
 	})
 
-	if res, err := redisClient.Ping().Result(); err != nil {
+	if res, err := redisClient.Ping(context.Background()).Result(); err != nil {
 		panic(err)
 	} else {
 		fmt.Println(res, "Redis is connected now")
