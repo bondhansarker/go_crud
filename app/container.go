@@ -1,6 +1,8 @@
 package app
 
 import (
+	"fmt"
+
 	"demo/app/http/controllers"
 	"demo/app/repository"
 	"demo/app/service"
@@ -11,6 +13,8 @@ import (
 
 func Init(e *echo.Echo) {
 	db := connection.Db()
+	redis := connection.Redis()
+	fmt.Println(redis)
 
 	// register all repositories
 	userRepository := repository.NewUsersRepository(db)
