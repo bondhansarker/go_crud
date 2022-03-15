@@ -22,9 +22,9 @@ func NewAuthController(e *echo.Echo, authService service.IAuth, userService serv
 	}
 
 	e.POST("/users/login", ac.Login)
-	//g.POST("/users/logout", ac.Logout)
-	//g.POST("/users/token/refresh", ac.RefreshToken)
-	//g.GET("/users/token/verify", ac.VerifyToken)
+	e.POST("/users/logout", ac.Logout)
+	//e.POST("/users/token/refresh", ac.RefreshToken)
+	//e.GET("/users/token/verify", ac.VerifyToken)
 }
 
 func (ctr *auth) Login(c echo.Context) error {
@@ -55,4 +55,21 @@ func (ctr *auth) Login(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, response)
+}
+
+func (ctr *auth) Logout(c echo.Context) error {
+	var user *serializers.LoggedInUser
+	var err error
+
+	if user, err = GetUserFromContext(c); err != nil {
+		serverErr := errors.NewInternalServerError("no logged-in user found")
+		return c.JSON(serverErr.Status, serverErr)
+	}
+
+	if err := ctr.authService.Logout(user); err != nil {
+		serverErr := errors.NewInternalServerError("failed to logout")
+		return c.JSON(serverErr.Status, serverErr)
+	}
+
+	return c.JSON(http.StatusOK, "Successfully logged out")
 }

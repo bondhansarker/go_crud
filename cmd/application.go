@@ -8,12 +8,13 @@ import (
 	"demo/app/http/middlewares"
 	"demo/infra/config"
 	"demo/infra/connection"
+	"demo/infra/connection/cache"
 	"github.com/labstack/echo/v4"
 )
 
 func LoadConnection() {
 	connection.ConnectDb()
-	connection.ConnectRedis()
+	cache.ConnectRedis()
 }
 
 func runServer() {

@@ -5,13 +5,14 @@ import (
 	"demo/app/repository"
 	"demo/app/serializers"
 	"demo/app/utils/methods"
+	"demo/infra/config"
 	"demo/infra/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type IAuth interface {
 	Login(req *serializers.LoginRequest) (*serializers.LoginResponse, error)
-	//Logout(user *serializers.LoggedInUser) error
+	Logout(user *serializers.LoggedInUser) error
 	//RefreshToken(refreshToken string) (*serializers.LoginResp, error)
 	//VerifyToken(accessToken string) (*serializers.VerifyTokenResp, error)
 }
@@ -49,6 +50,10 @@ func (as *auth) Login(req *serializers.LoginRequest) (*serializers.LoginResponse
 		return nil, errors.ErrCreateJwt
 	}
 
+	if err = as.tokenService.StoreTokenUuid(user.ID, token); err != nil {
+		return nil, errors.ErrStoreTokenUuid
+	}
+
 	var userResp *serializers.UserResponse
 	respErr := methods.StructToStruct(user, &userResp)
 
@@ -62,4 +67,11 @@ func (as *auth) Login(req *serializers.LoginRequest) (*serializers.LoginResponse
 		User:         userResp,
 	}
 	return res, nil
+}
+
+func (as *auth) Logout(user *serializers.LoggedInUser) error {
+	return as.tokenService.DeleteTokenUuid(
+		config.Redis().AccessUuidPrefix+user.AccessUuid,
+		config.Redis().RefreshUuidPrefix+user.RefreshUuid,
+	)
 }

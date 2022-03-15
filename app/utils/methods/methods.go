@@ -2,6 +2,7 @@ package methods
 
 import (
 	"encoding/json"
+	"reflect"
 )
 
 func StructToStruct(input interface{}, output interface{}) error {
@@ -10,4 +11,8 @@ func StructToStruct(input interface{}, output interface{}) error {
 	} else {
 		return err
 	}
+}
+
+func IsEmpty(x interface{}) bool {
+	return x == nil || reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface())
 }

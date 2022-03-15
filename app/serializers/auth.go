@@ -20,3 +20,9 @@ type JwtToken struct {
 	AccessExpiry  int64  `json:"axp"`
 	RefreshExpiry int64  `json:"rxp"`
 }
+
+type LoggedInUser struct {
+	ID          int    `json:"user_id"`
+	AccessUuid  string `json:"access_uuid"`
+	RefreshUuid string `json:"refresh_uuid"`
+}

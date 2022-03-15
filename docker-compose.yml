@@ -23,6 +23,8 @@ services:
     container_name: mysql
     hostname: mysql
     restart: always
+    cap_add:
+      - SYS_NICE
     env_file:
       - .env
     ports:

@@ -1,11 +1,14 @@
 package service
 
 import (
+	"context"
+	"strconv"
 	"time"
 
 	"demo/app/repository"
 	"demo/app/serializers"
 	"demo/infra/config"
+	"demo/infra/connection/cache"
 	"demo/infra/errors"
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
@@ -13,17 +16,19 @@ import (
 
 type IToken interface {
 	CreateToken(userID uint) (*serializers.JwtToken, error)
-	//StoreTokenUuid(userID uint, token *serializers.JwtToken) error
-	//DeleteTokenUuid(uuid ...string) error
+	StoreTokenUuid(userID uint, token *serializers.JwtToken) error
+	DeleteTokenUuid(uuid ...string) error
 }
 
 type token struct {
-	userRepo repository.IUsers
+	baseContext context.Context
+	userRepo    repository.IUsers
 }
 
-func NewTokenService(userRepo repository.IUsers) IToken {
+func NewTokenService(baseContext context.Context, userRepo repository.IUsers) IToken {
 	return &token{
-		userRepo: userRepo,
+		baseContext: baseContext,
+		userRepo:    userRepo,
 	}
 }
 
@@ -67,4 +72,33 @@ func (t *token) CreateToken(userID uint) (*serializers.JwtToken, error) {
 		return nil, errors.ErrRefreshTokenSign
 	}
 	return token, nil
+}
+
+func (t *token) StoreTokenUuid(userID uint, token *serializers.JwtToken) error {
+	now := time.Now().Unix()
+	key, _ := strconv.Atoi(strconv.Itoa(int(userID)))
+
+	err := cache.Client().Set(
+		t.baseContext,
+		config.Redis().AccessUuidPrefix+token.AccessUuid,
+		key, int(token.AccessExpiry-now),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = cache.Client().Set(
+		t.baseContext,
+		config.Redis().RefreshUuidPrefix+token.RefreshUuid,
+		key, int(token.RefreshExpiry-now),
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *token) DeleteTokenUuid(uuid ...string) error {
+	return cache.Client().Del(t.baseContext, uuid...)
 }
