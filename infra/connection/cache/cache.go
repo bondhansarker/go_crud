@@ -10,8 +10,6 @@ import (
 	"demo/infra/errors"
 )
 
-const KeyPrefix = "demo:"
-
 func (cc RedisCacheClient) Set(ctx context.Context, key string, value interface{}, ttl int) error {
 
 	serializedValue, err := json.Marshal(value)
@@ -19,7 +17,7 @@ func (cc RedisCacheClient) Set(ctx context.Context, key string, value interface{
 		return err
 	}
 
-	return cc.Redis.Set(ctx, KeyPrefix+key, string(serializedValue), time.Duration(ttl)*time.Second).Err()
+	return cc.Redis.Set(ctx, key, string(serializedValue), time.Duration(ttl)*time.Second).Err()
 }
 
 func (cc RedisCacheClient) Get(ctx context.Context, key string) (string, error) {
